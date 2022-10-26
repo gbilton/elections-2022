@@ -1,0 +1,6 @@
+/.mypy_cache
+/.python-version
+/.venv
+/.vscode
+/Makefile
+/__pycache__
