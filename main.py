@@ -1,3 +1,5 @@
+import asyncio
+import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,16 +17,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.get("/import")
-async def get():
-    state_service = StateService()
-    prediction_service = PredictionService()
-    state_service.import_states()
-    vote_service = VoteService(state_service=state_service, prediction_service=prediction_service)
-    await vote_service.import_votes()
-    return
 
 
 @app.get("/predictions")
