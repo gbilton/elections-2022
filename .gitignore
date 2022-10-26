@@ -2,5 +2,4 @@
 /.python-version
 /.venv
 /.vscode
-/Makefile
 /__pycache__
