@@ -1,10 +1,8 @@
-import asyncio
-import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from schemas import Prediction
 
-from services import PredictionService, StateService, VoteService
+from services import PredictionService
 
 
 app = FastAPI()
