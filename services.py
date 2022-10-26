@@ -6,6 +6,8 @@ import httpx
 
 from db import get_database
 from exceptions import InvalidData, NotFound
+from schemas import Candidate, StateVotingInfo
+from handler import worker
 
 
 class StateService:
@@ -93,17 +95,101 @@ class StateService:
                 raise InvalidData(f"Invalid state name: {state_name}")
 
 
+class PredictionService:
+    def _get_all_states_voting_info(
+        self, voting_info: list[Dict[str, Any]]
+    ) -> list[StateVotingInfo]:
+        return [self._get_state_voting_info(state_voting_info) for state_voting_info in voting_info]
+
+    def _get_state_voting_info(self, state_voting_info: Dict[str, Any]) -> StateVotingInfo:
+        last_update_time = state_voting_info["hg"]
+        state = state_voting_info["cdabr"]
+        percentage_of_votes_counted = float(state_voting_info["pst"].replace(",", "."))
+        candidates = self._get_all_candidates_information(state_voting_info)
+
+        return StateVotingInfo(
+            last_update_time=last_update_time,
+            state=state,
+            percentage_of_votes_counted=percentage_of_votes_counted,
+            candidates=candidates,
+        )
+
+    def _get_all_candidates_information(self, state_) -> list[Candidate]:
+        candidates_info = state_["cand"]
+        return [self._get_candidate_info(candidate_info) for candidate_info in candidates_info]
+
+    def _get_candidate_info(self, candidate_info: Dict[str, Any]) -> Candidate:
+        name = candidate_info["nm"].title()
+        votes = int(candidate_info["vap"])
+        percentage = float(candidate_info["pvap"].replace(",", "."))
+        return Candidate(name=name, votes=votes, percentage_of_votes=percentage)
+
+    def _clean_voting_info(self, voting_info: list[Dict[str, Any]]) -> list[StateVotingInfo]:
+        return self._get_all_states_voting_info(voting_info)
+
+    def calculate_prediction(self, clean_voting_info: list[StateVotingInfo]):
+        result = []
+        for state_voting_info in clean_voting_info:
+            percentage_of_votes_counted = state_voting_info.percentage_of_votes_counted
+            for candidate in state_voting_info.candidates:
+                projected_votes = round(candidate.votes * 100 / percentage_of_votes_counted)
+                result.append(
+                    {
+                        "name": candidate.name,
+                        "projected_votes": projected_votes,
+                        "state:": state_voting_info.state,
+                    }
+                )
+
+        df = pd.DataFrame(result)
+        projection_df = (
+            df.groupby(["name"])
+            .sum(numeric_only=True)
+            .sort_values(by="projected_votes", ascending=False)
+        )
+        total_votes = projection_df["projected_votes"].sum()
+        projection_df["percentage"] = projection_df["projected_votes"] / total_votes
+        return projection_df
+
+    def make_prediction(self, vote_obj: dict[str, Any]):
+        voting_info = vote_obj["request_json"]
+        clean_voting_info = self._clean_voting_info(voting_info)
+        prediction_df = self.calculate_prediction(clean_voting_info)
+        prediction = {
+            "lula": prediction_df.loc["Lula", "percentage"],
+            "bolsonaro": prediction_df.loc["Jair Bolsonaro", "percentage"],
+            "time_": vote_obj["request_time"],
+        }
+        self.save_prediction(prediction)
+
+    def save_prediction(self, prediction: Dict[str, Any]) -> bool:
+        """Saves a prediction to the database.
+
+        Args:
+            prediction (Dict[str, Any]): A dictionary with the prediction information.
+
+        Returns:
+            bool: True if successful.
+        """
+        db = get_database()
+        db["predictions"].insert_one(prediction)
+        return True
+
+
 class VoteService:
-    def __init__(self, state_service: StateService):
+    def __init__(self, state_service: StateService, prediction_service: PredictionService):
         self.state_service = state_service
+        self.prediction_service = prediction_service
 
     async def import_votes(self):
         """Asyncronously imports vote data to the database."""
         states = self.state_service.get_states()
         tasks = await self._create_tasks(states)
-        votes = await asyncio.gather(*tasks)
-        vote_obj = {"request_time": datetime.now(), "request_json": votes}
+        voting_info = await asyncio.gather(*tasks)
+        vote_obj = {"request_time": datetime.now(), "request_json": voting_info}
         self._save_votes(vote_obj)
+
+        worker.enqueue(self.prediction_service.make_prediction, vote_obj)
 
     async def _request_votes(self, url: str) -> Any:
         """Asyncronously requests voting data.
@@ -147,15 +233,16 @@ class VoteService:
         db["votes"].insert_one(vote_obj)
         return True
 
-    def _calculate_prediction(self):
+    def get_last_vote(self):
         pass
 
-    def _save_prediction(self):
+    def get_all_votes(self):
         pass
 
 
 if __name__ == "__main__":
     state_service = StateService()
+    prediction_service = PredictionService()
     state_service.import_states()
-    vote_service = VoteService(state_service)
+    vote_service = VoteService(state_service=state_service, prediction_service=prediction_service)
     asyncio.run(vote_service.import_votes())
