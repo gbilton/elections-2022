@@ -16,6 +16,25 @@ class StateService:
         states = self._request_states()
         self._save_states({"states": states})
 
+    def get_states(self) -> list[str]:
+        """Fetches a list of states from the database.
+
+        Raises:
+            NotFound: raised if there are no states in the database.
+            InvalidData: raised if the data from the database is incorrect.
+
+        Returns:
+            list[str]: A list of brazilian states.
+        """
+        db = get_database()
+        states: Optional[Dict[str, list[str]]] = db["states"].find_one()
+        if not states:
+            raise NotFound("No states found.")
+
+        state_list = states["states"]
+        self._validate_states(state_list)
+        return state_list
+
     def _request_states(self) -> list[str]:
         """Gets a list of all brazilian states.
 
@@ -43,25 +62,6 @@ class StateService:
             db["states"].insert_one(states)
             return True
         return False
-
-    def get_states(self) -> list[str]:
-        """Fetches a list of states from the database.
-
-        Raises:
-            NotFound: raised if there are no states in the database.
-            InvalidData: raised if the data from the database is incorrect.
-
-        Returns:
-            list[str]: A list of brazilian states.
-        """
-        db = get_database()
-        states: Optional[Dict[str, list[str]]] = db["states"].find_one()
-        if not states:
-            raise NotFound("No states found.")
-
-        state_list = states["states"]
-        self._validate_states(state_list)
-        return state_list
 
     def _validate_states(self, state_list: list[str]) -> None:
         """Checks if the state data is valid.
@@ -96,6 +96,42 @@ class StateService:
 
 
 class PredictionService:
+    def make_prediction(self, vote_obj: dict[str, Any]):
+        """Calculates and saves a prediction based on the vote document.
+
+        Args:
+            vote_obj (dict[str, Any]): object containing the vote request json and the request time.
+        """
+        voting_info = vote_obj["request_json"]
+        clean_voting_info = self._clean_voting_info(voting_info)
+        prediction_df = self._calculate_prediction(clean_voting_info)
+        prediction = {
+            "lula": prediction_df.loc["Lula", "percentage"],
+            "bolsonaro": prediction_df.loc["Jair Bolsonaro", "percentage"],
+            "time_": vote_obj["request_time"],
+        }
+        self._save_prediction(prediction)
+
+    def get_last_prediction(self) -> Optional[Dict[str, Any]]:
+        """Fetch the last prediction from database.
+
+        Returns:
+            Optional[Dict[str, Any]]: The last prediction object
+        """
+        db = get_database()
+        last_prediction = db["predictions"].find().sort("date", -1).limit(1).next()
+        return last_prediction
+
+    def get_all_predictions(self) -> Optional[list[Dict[str, Any]]]:
+        """Fetches all predictions from database.
+
+        Returns:
+            Optional[list[Dict[str, Any]]]: A list of all predictions in the database.
+        """
+        db = get_database()
+        all_predictions = list(db["predictions"].find())
+        return all_predictions
+
     def _get_all_states_voting_info(
         self, voting_info: list[Dict[str, Any]]
     ) -> list[StateVotingInfo]:
@@ -167,7 +203,7 @@ class PredictionService:
         """
         return self._get_all_states_voting_info(voting_info)
 
-    def calculate_prediction(self, clean_voting_info: list[StateVotingInfo]) -> pd.DataFrame:
+    def _calculate_prediction(self, clean_voting_info: list[StateVotingInfo]) -> pd.DataFrame:
         """Calculates the final standings if each state's proportion of votes remained the same until the end of vote counting.
 
         Args:
@@ -199,23 +235,7 @@ class PredictionService:
         projection_df["percentage"] = projection_df["projected_votes"] / total_votes
         return projection_df
 
-    def make_prediction(self, vote_obj: dict[str, Any]):
-        """Calculates and saves a prediction based on the vote document.
-
-        Args:
-            vote_obj (dict[str, Any]): object containing the vote request json and the request time.
-        """
-        voting_info = vote_obj["request_json"]
-        clean_voting_info = self._clean_voting_info(voting_info)
-        prediction_df = self.calculate_prediction(clean_voting_info)
-        prediction = {
-            "lula": prediction_df.loc["Lula", "percentage"],
-            "bolsonaro": prediction_df.loc["Jair Bolsonaro", "percentage"],
-            "time_": vote_obj["request_time"],
-        }
-        self.save_prediction(prediction)
-
-    def save_prediction(self, prediction: Dict[str, Any]) -> bool:
+    def _save_prediction(self, prediction: Dict[str, Any]) -> bool:
         """Saves a prediction to the database.
 
         Args:
@@ -227,26 +247,6 @@ class PredictionService:
         db = get_database()
         db["predictions"].insert_one(prediction)
         return True
-
-    def get_last_prediction(self) -> Optional[Dict[str, Any]]:
-        """Fetch the last prediction from database.
-
-        Returns:
-            Optional[Dict[str, Any]]: The last prediction object
-        """
-        db = get_database()
-        last_prediction = db["predictions"].find().sort("date", -1).limit(1).next()
-        return last_prediction
-
-    def get_all_predictions(self) -> Optional[list[Dict[str, Any]]]:
-        """Fetches all predictions from database.
-
-        Returns:
-            Optional[list[Dict[str, Any]]]: A list of all predictions in the database.
-        """
-        db = get_database()
-        all_predictions = list(db["predictions"].find())
-        return all_predictions
 
 
 class VoteService:
@@ -263,6 +263,25 @@ class VoteService:
         self._save_votes(vote_obj)
 
         worker.enqueue(self.prediction_service.make_prediction, vote_obj)
+
+    def get_last_vote(self) -> Optional[Dict[str, Any]]:
+        """Fetches the last vote document from the database.
+
+        Returns:
+            Dict[str, Any]: The last vote document.
+        """
+        db = get_database()
+        last_vote_obj = db["votes"].find().sort("date", -1).limit(1).next()
+        return last_vote_obj
+
+    def get_all_votes(self) -> Optional[list[Dict[str, Any]]]:
+        """Fetches all the vote documents in the database.
+
+        Returns:
+            Optional[list[Dict[str, Any]]]: A list containing all the vote documents in the database.
+        """
+        db = get_database()
+        return list(db["votes"].find({}))
 
     async def _request_votes(self, url: str) -> Any:
         """Asyncronously requests voting data.
@@ -305,22 +324,3 @@ class VoteService:
         db = get_database()
         db["votes"].insert_one(vote_obj)
         return True
-
-    def get_last_vote(self) -> Optional[Dict[str, Any]]:
-        """Fetches the last vote document from the database.
-
-        Returns:
-            Dict[str, Any]: The last vote document.
-        """
-        db = get_database()
-        last_vote_obj = db["votes"].find().sort("date", -1).limit(1).next()
-        return last_vote_obj
-
-    def get_all_votes(self) -> Optional[list[Dict[str, Any]]]:
-        """Fetches all the vote documents in the database.
-
-        Returns:
-            Optional[list[Dict[str, Any]]]: A list containing all the vote documents in the database.
-        """
-        db = get_database()
-        return list(db["votes"].find({}))
