@@ -98,6 +98,7 @@ class VoteService:
         self.state_service = state_service
 
     async def import_votes(self):
+        """Asyncronously imports vote data to the database."""
         states = self.state_service.get_states()
         tasks = await self._create_tasks(states)
         votes = await asyncio.gather(*tasks)
@@ -105,12 +106,28 @@ class VoteService:
         self._save_votes(vote_obj)
 
     async def _request_votes(self, url: str) -> Any:
+        """Asyncronously requests voting data.
+
+        Args:
+            url (str): The request url
+
+        Returns:
+            Any: Json data of the request.
+        """
         async with httpx.AsyncClient() as client:
             r = await client.get(url)
         if r.status_code == 200:
             return r.json()
 
     async def _create_tasks(self, states: list[str]) -> list[Coroutine]:
+        """Creates multiple tasks to be executed concurrently.
+
+        Args:
+            states (list[str]): A list of states.
+
+        Returns:
+            list[Coroutine]: list of Coroutines to be executed concurrently.
+        """
         tasks = []
         for state in states:
             url = f"https://resultados.tse.jus.br/oficial/ele2022/544/dados-simplificados/{state.lower()}/{state.lower()}-c0001-e000544-r.json"
@@ -118,6 +135,14 @@ class VoteService:
         return tasks
 
     def _save_votes(self, vote_obj: Dict[str, Any]) -> bool:
+        """Saves voting data to the database.
+
+        Args:
+            vote_obj (Dict[str, Any]): A dictionary containing voting data and the time of request.
+
+        Returns:
+            bool: True if successful.
+        """
         db = get_database()
         db["votes"].insert_one(vote_obj)
         return True
