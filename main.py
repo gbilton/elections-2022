@@ -2,6 +2,7 @@ import asyncio
 import time
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from schemas import Prediction
 
 from services import PredictionService, StateService, VoteService
 
@@ -19,11 +20,15 @@ app.add_middleware(
 )
 
 
-@app.get("/predictions")
+@app.get("/predictions", response_model=list[Prediction])
 async def get_predictions():
-    pass
+    prediction_service = PredictionService()
+    predictions = prediction_service.get_all_predictions()
+    return predictions
 
 
-@app.get("/predictions/last")
+@app.get("/predictions/last", response_model=Prediction)
 async def get_last_prediction():
-    pass
+    prediction_service = PredictionService()
+    last_prediction = prediction_service.get_last_prediction()
+    return last_prediction

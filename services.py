@@ -245,7 +245,8 @@ class PredictionService:
             Optional[list[Dict[str, Any]]]: A list of all predictions in the database.
         """
         db = get_database()
-        return db["predictions"].find({})
+        all_predictions = list(db["predictions"].find())
+        return all_predictions
 
 
 class VoteService:
@@ -322,5 +323,4 @@ class VoteService:
             Optional[list[Dict[str, Any]]]: A list containing all the vote documents in the database.
         """
         db = get_database()
-        all_votes = db["votes"].find({})
-        return all_votes
+        return list(db["votes"].find({}))

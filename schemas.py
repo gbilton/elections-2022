@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass
@@ -14,3 +15,10 @@ class StateVotingInfo:
     last_update_time: str
     percentage_of_votes_counted: float
     candidates: list[Candidate]
+
+
+@dataclass
+class Prediction:
+    bolsonaro: str
+    lula: str
+    time_: datetime
