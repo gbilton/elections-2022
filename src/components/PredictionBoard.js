@@ -1,11 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import BasicTable from "./DataTable";
 
 function PredictionBoard() {
+  const rows = [createData("Jair Bolsonaro", "loading..."), createData("Lula", "loading...")];
   const [prediction, setPrediction] = useState({
-    bolsonaro: "loading...",
-    lula: "loading...",
     time_: "loading...",
+    rows: rows,
   });
 
   useEffect(() => {
@@ -13,7 +14,7 @@ function PredictionBoard() {
       .get("http://localhost:8000/predictions/last")
       .then((response) => {
         console.log(response);
-        setPrediction(response.data);
+        setPrediction(parseData(response.data));
       })
       .catch((error) => {
         console.log(error);
@@ -21,13 +22,36 @@ function PredictionBoard() {
   }, []);
 
   return (
-    <div style={{ margin: "auto" }}>
-      <p>Prediction</p>
-      <p>Jair Bolsonaro: {prediction.bolsonaro}</p>
-      <p>Lula: {prediction.lula}</p>
-      <p>Updated: {prediction.time_}</p>
+    <div>
+      <BasicTable rows={prediction.rows} />
     </div>
   );
 }
 
 export default PredictionBoard;
+
+function createData(candidate, percentageVotes) {
+  return { candidate, percentageVotes };
+}
+
+function parseData(prediction) {
+  const bolsonaro = parsePercentage(prediction.bolsonaro);
+  const lula = parsePercentage(prediction.lula);
+  const time_ = parseTime(prediction.time_);
+
+  const rows = [createData("Jair Bolsonaro", bolsonaro), createData("Lula", lula)].sort();
+
+  return {
+    time_: time_,
+    rows: rows,
+  };
+}
+
+function parseTime(time_) {
+  const date = new Date(time_);
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+function parsePercentage(percentage) {
+  return (percentage * 100).toFixed(2) + "%";
+}
