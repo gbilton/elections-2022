@@ -29,6 +29,23 @@ function PredictionsChart() {
         data={predictions}
         options={{
           maintainAspectRatio: true,
+          scales: {
+            y: {
+              min: 0,
+              max: 100,
+              ticks: {
+                callback: function (value) {
+                  return value + "%";
+                },
+              },
+            },
+            x: {
+              ticks: {
+                autoSkip: true,
+                maxTicksLimit: 6,
+              },
+            },
+          },
         }}
       />
     </div>
@@ -38,20 +55,29 @@ function PredictionsChart() {
 export default PredictionsChart;
 
 function parseData(predictions) {
-  const bolsonaro = predictions.map((prediction) => prediction.bolsonaro);
-  const lula = predictions.map((prediction) => prediction.lula);
-  const time_ = predictions.map((prediction) => prediction.time_);
+  const bolsonaro = predictions.map((prediction) => prediction.bolsonaro * 100);
+  const lula = predictions.map((prediction) => prediction.lula * 100);
+  const time_ = predictions.map((prediction) => parseTime(prediction.time_));
 
+  function parseTime(time_) {
+    const date = new Date(time_);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
   const data = {
+    backgroundColor: ["rgb(189, 174, 209)"],
     labels: time_,
     datasets: [
       {
         label: "Jair Bolsonaro",
         data: bolsonaro,
+        borderColor: "#3c9e35",
+        backgroundColor: "#3c9e35",
       },
       {
         label: "Lula",
         data: lula,
+        borderColor: "#ff3200",
+        backgroundColor: "#ff3200",
       },
     ],
   };
