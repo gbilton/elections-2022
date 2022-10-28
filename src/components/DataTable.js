@@ -10,11 +10,30 @@ import Paper from "@mui/material/Paper";
 export default function BasicTable(props) {
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 100 }} aria-label="simple table">
+      <Table
+        sx={{
+          backgroundColor: "#bdaed1",
+        }}
+      >
         <TableHead>
           <TableRow>
-            <TableCell>Candidate</TableCell>
-            <TableCell align="right">Projected % Votes</TableCell>
+            <TableCell
+              sx={{
+                fontWeight: "bold",
+                fontSize: 20,
+              }}
+            >
+              Candidate
+            </TableCell>
+            <TableCell
+              align="right"
+              sx={{
+                fontWeight: "bold",
+                fontSize: 20,
+              }}
+            >
+              Projected % Votes
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

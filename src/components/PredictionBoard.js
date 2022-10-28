@@ -22,8 +22,20 @@ function PredictionBoard() {
   }, []);
 
   return (
-    <div>
+    <div
+      style={{
+        // backgroundColor: "green",
+        paddingLeft: "500px",
+        paddingRight: "500px",
+        paddingTop: "20px",
+        borderRadius: "50px",
+        marginBottom: "50px",
+      }}
+    >
       <BasicTable rows={prediction.rows} />
+      <p style={{ textAlign: "center", fontWeight: "bold", fontSize: 20 }}>
+        Updated: {prediction.time_}
+      </p>
     </div>
   );
 }

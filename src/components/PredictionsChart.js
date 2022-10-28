@@ -22,7 +22,7 @@ function PredictionsChart() {
   }, []);
 
   return (
-    <div style={{ width: 1000, margin: "auto" }}>
+    <div style={{ width: 850, margin: "auto" }}>
       {console.log(predictions)}
       <Line
         data={predictions}
