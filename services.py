@@ -104,7 +104,10 @@ class PredictionService:
         """
         voting_info = vote_obj["request_json"]
         clean_voting_info = self._clean_voting_info(voting_info)
-        prediction_df = self._calculate_prediction(clean_voting_info)
+        try:
+            prediction_df = self._calculate_prediction(clean_voting_info)
+        except ZeroDivisionError:
+            return
         prediction = {
             "lula": prediction_df.loc["Lula", "percentage"],
             "bolsonaro": prediction_df.loc["Jair Bolsonaro", "percentage"],
@@ -308,7 +311,7 @@ class VoteService:
         """
         tasks = []
         for state in states:
-            url = f"https://resultados.tse.jus.br/oficial/ele2022/544/dados-simplificados/{state.lower()}/{state.lower()}-c0001-e000544-r.json"
+            url = f"https://resultados.tse.jus.br/oficial/ele2022/545/dados-simplificados/{state.lower()}/{state.lower()}-c0001-e000545-r.json"
             tasks.append(self._request_votes(url))
         return tasks
 
