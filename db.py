@@ -4,7 +4,7 @@ from pymongo import MongoClient
 def get_database():
 
     # Provide the mongodb url to connect python to mongodb using pymongo
-    CONNECTION_STRING = "mongodb://localhost:27017"
+    CONNECTION_STRING = "mongodb://mongo:27017"
 
     # Create a connection using MongoClient.
     client = MongoClient(CONNECTION_STRING)

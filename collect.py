@@ -23,4 +23,4 @@ async def main(interval: int):
 
 
 if __name__ == "__main__":
-    asyncio.run(main(10))
+    asyncio.run(main(5 * 60))

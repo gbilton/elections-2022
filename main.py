@@ -18,6 +18,11 @@ app.add_middleware(
 )
 
 
+@app.get("/")
+async def check_api_health():
+    return {"Health": "OK!"}
+
+
 @app.get("/predictions", response_model=list[Prediction])
 async def get_predictions():
     """Fetch all predictions
