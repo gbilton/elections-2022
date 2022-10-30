@@ -10,6 +10,18 @@ function PredictionBoard() {
   });
 
   useEffect(() => {
+    axios
+      .get("http://localhost:8000/predictions/last")
+      .then((response) => {
+        console.log(response);
+        setPrediction(parseData(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(
       () =>
         axios

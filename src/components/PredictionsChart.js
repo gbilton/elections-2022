@@ -10,6 +10,18 @@ function PredictionsChart() {
   });
 
   useEffect(() => {
+    axios
+      .get("http://localhost:8000/predictions")
+      .then((response) => {
+        console.log(response);
+        setPredictions(parseData(response.data));
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(
       () =>
         axios
