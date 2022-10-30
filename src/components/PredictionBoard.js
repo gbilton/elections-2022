@@ -11,7 +11,7 @@ function PredictionBoard() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/predictions/last")
+      .get("http://api:8000/predictions/last")
       .then((response) => {
         console.log(response);
         setPrediction(parseData(response.data));
@@ -25,7 +25,7 @@ function PredictionBoard() {
     const interval = setInterval(
       () =>
         axios
-          .get("http://localhost:8000/predictions/last")
+          .get("http://api:8000/predictions/last")
           .then((response) => {
             console.log(response);
             setPrediction(parseData(response.data));
