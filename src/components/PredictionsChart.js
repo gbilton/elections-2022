@@ -53,8 +53,8 @@ function PredictionsChart() {
           maintainAspectRatio: true,
           scales: {
             y: {
-              min: 0,
-              max: 100,
+              min: 40,
+              max: 60,
               ticks: {
                 callback: function (value) {
                   return value + "%";
