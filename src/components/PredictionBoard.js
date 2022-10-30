@@ -10,15 +10,20 @@ function PredictionBoard() {
   });
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/predictions/last")
-      .then((response) => {
-        console.log(response);
-        setPrediction(parseData(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const interval = setInterval(
+      () =>
+        axios
+          .get("http://localhost:8000/predictions/last")
+          .then((response) => {
+            console.log(response);
+            setPrediction(parseData(response.data));
+          })
+          .catch((error) => {
+            console.log(error);
+          }),
+      5 * 60 * 1000
+    );
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -51,7 +56,7 @@ function parseData(prediction) {
   const lula = parsePercentage(prediction.lula);
   const time_ = parseTime(prediction.time_);
 
-  const rows = [createData("Jair Bolsonaro", bolsonaro), createData("Lula", lula)].sort();
+  const rows = [createData("Jair Bolsonaro", bolsonaro), createData("Lula", lula)];
 
   return {
     time_: time_,

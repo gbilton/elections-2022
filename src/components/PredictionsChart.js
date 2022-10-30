@@ -10,15 +10,20 @@ function PredictionsChart() {
   });
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/predictions")
-      .then((response) => {
-        console.log(response);
-        setPredictions(parseData(response.data));
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    const interval = setInterval(
+      () =>
+        axios
+          .get("http://localhost:8000/predictions")
+          .then((response) => {
+            console.log(response);
+            setPredictions(parseData(response.data));
+          })
+          .catch((error) => {
+            console.log(error);
+          }),
+      5 * 60 * 1000
+    );
+    return () => clearInterval(interval);
   }, []);
 
   return (
