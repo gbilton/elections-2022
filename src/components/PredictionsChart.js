@@ -44,6 +44,12 @@ function PredictionsChart() {
       <Line
         data={predictions}
         options={{
+          plugins: {
+            title: {
+              display: true,
+              text: "Predictions X Time",
+            },
+          },
           maintainAspectRatio: true,
           scales: {
             y: {
