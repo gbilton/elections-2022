@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import Any, Coroutine, Dict, Optional
 import pandas as pd
 import httpx
+import pymongo
 
 from db import get_database
 from exceptions import InvalidData, NotFound
@@ -122,7 +123,7 @@ class PredictionService:
             Optional[Dict[str, Any]]: The last prediction object
         """
         db = get_database()
-        last_prediction = db["predictions"].find().sort("date", -1).limit(1).next()
+        last_prediction = db["predictions"].find().sort("time_", pymongo.DESCENDING).limit(1).next()
         return last_prediction
 
     def get_all_predictions(self) -> Optional[list[Dict[str, Any]]]:
