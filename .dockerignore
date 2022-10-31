@@ -5,3 +5,6 @@
 /__pycache__
 /data
 /my-app
+
+# dependencies
+/node_modules
