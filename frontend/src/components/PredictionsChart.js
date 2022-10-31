@@ -11,7 +11,7 @@ function PredictionsChart() {
 
   useEffect(() => {
     axios
-      .get("http://194.195.213.136:8000/predictions")
+      .get("http://localhost:8000/predictions")
       .then((response) => {
         console.log(response);
         setPredictions(parseData(response.data));
@@ -25,7 +25,7 @@ function PredictionsChart() {
     const interval = setInterval(
       () =>
         axios
-          .get("http://194.195.213.136:8000/predictions")
+          .get("http://localhost:8000/predictions")
           .then((response) => {
             console.log(response);
             setPredictions(parseData(response.data));

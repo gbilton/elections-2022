@@ -1,10 +1,14 @@
 from pymongo import MongoClient
+from config import settings
 
 
 def get_database():
+    # Get host and port from settings
+    host = settings["MONGO_HOST"]
+    port = settings["MONGO_PORT"]
 
     # Provide the mongodb url to connect python to mongodb using pymongo
-    CONNECTION_STRING = "mongodb://mongo:27017"
+    CONNECTION_STRING = f"mongodb://{host}:{port}"
 
     # Create a connection using MongoClient.
     client = MongoClient(CONNECTION_STRING)
