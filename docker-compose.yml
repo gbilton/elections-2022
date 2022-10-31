@@ -25,6 +25,9 @@ services:
       - mongo
     environment:
       - APP_ENV=docker
+    expose:
+      - 8000
+  
 
   mongo:
     container_name: mongo
@@ -35,12 +38,12 @@ services:
       - APP_ENV=docker
     volumes:
       - './data:/data/db'
+    expose:
+      - 27017
 
   redis:
     container_name: redis
     image: redis
-    ports:
-      - 6379:6379
     environment:
       - APP_ENV=docker
     expose:
