@@ -1,8 +1,8 @@
 FROM node
 
-WORKDIR /elections-front
+WORKDIR /frontend
 
-COPY . ./
+COPY /frontend .
 
 RUN npm install
 

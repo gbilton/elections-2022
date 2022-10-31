@@ -3,54 +3,56 @@ version: '3.1'
 services:
 
   react-ui:
+    container_name: react-ui
     build:
-      context: ../elections-front
+      context: .
+      dockerfile: Dockerfile.ui
     ports:
       - "3000:3000"
-    container_name: react-ui
     stdin_open: true
     depends_on:
       - api
     
-
   api:
+    container_name: api
     build: 
       context: .
       dockerfile: Dockerfile.api
+    image: elections-2022_api
     ports:
       - 8000:8000
     depends_on:
       - mongo
-      - redis
-    container_name: api
 
   mongo:
+    container_name: mongo
     image: mongo
     ports:
       - 27017:27017
-    container_name: mongo
     volumes:
       - './data:/data/db'
 
   redis:
+    container_name: redis
     image: redis
     ports:
       - 6379:6379
     expose:
       - 6379
-    container_name: redis
   
   worker:
-      image: brazilian-elections_api:latest
-      depends_on:
-          - redis
-      command: rq worker --url redis://redis:6379
-      links:
-          - redis
+    container_name: worker
+    image: elections-2022_api:latest
+    depends_on:
+        - redis
+    command: rq worker --url redis://redis:6379
+    links:
+        - redis
   
   collector:
-      image: brazilian-elections_api:latest
-      command: python collect.py
-      depends_on:
-        - worker
-        - mongo
+    container_name: collector
+    image: elections-2022_api:latest
+    command: python collect.py
+    depends_on:
+      - worker
+      - mongo

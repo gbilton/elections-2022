@@ -1,10 +1,14 @@
 /.mypy_cache
-/.python-version
-/.venv
 /.vscode
-/__pycache__
 /data
-/my-app
 
+
+# ----- frontend -----
 # dependencies
-/node_modules
+frontend/node_modules
+
+# ----- backend -----
+
+backend/.python-version
+backend/.venv
+backend/__pycache__
