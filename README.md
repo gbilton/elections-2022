@@ -1,6 +1,9 @@
 # Brazilian 2022 Presidential Elections Predictor
 elections-2022 collects and analyzes data from the official brazilian elections website (https://resultados.tse.jus.br/oficial/app/index.html#/eleicao;e=e545/resultados).
 
+<img src="https://user-images.githubusercontent.com/56371504/199311177-78f666eb-2224-4ea0-867c-3586b4c6846e.png" alt="elections-2022" width="800"/>
+
+
 # How It Works
 Voting data is periodically collected from each brazilian state. <br/>
 The number of votes from each state is then extrapolated, considering that all the votes have been counted, and the vote proportion per candidate remained the same. <br/>
