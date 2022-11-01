@@ -2,6 +2,9 @@
 elections-2022 collects and analyzes data from the official brazilian elections website (https://resultados.tse.jus.br/oficial/app/index.html#/eleicao;e=e545/resultados).
 
 # How It Works
+Voting data is periodically collected from each brazilian state. <br/>
+The number of votes from each state is then extrapolated, considering that all the votes have been counted, and the vote proportion per candidate remained the same. <br/>
+The results of each state are then aggregated and a prediction is made. <br/>
 
 
 # Installation
