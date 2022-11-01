@@ -20,6 +20,11 @@ pip install -r ./backend/requirements.txt
 ### Install npm dependencies
 npm --prefix ./frontend install ./frontend
 
+### Install Mongodb
+https://www.mongodb.com/docs/manual/installation/
+
+### Install Redis
+https://redis.io/docs/getting-started/installation/
 
 # Usage
 
