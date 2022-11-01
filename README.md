@@ -11,15 +11,21 @@ Install Docker Compose: docs.docker.com/compose/install/
 
 ## For local environment:
 ### Create virtual environment
-python -m venv ./backend/.venv
+```
+$ python -m venv ./backend/.venv
+```
 ### Activate virtual environment
-. ./backend/.venv/bin/activate
+```
+$ . ./backend/.venv/bin/activate
+```
 ### Install python dependencies
-pip install -r ./backend/requirements.txt
-
+```
+$ pip install -r ./backend/requirements.txt
+```
 ### Install npm dependencies
-npm --prefix ./frontend install ./frontend
-
+```
+$ npm --prefix ./frontend install ./frontend
+```
 ### Install Mongodb
 https://www.mongodb.com/docs/manual/installation/
 
@@ -30,16 +36,27 @@ https://redis.io/docs/getting-started/installation/
 
 ## For dockerized environment:
 ### Start containers
-make compose
+```
+$ make compose
+```
 ### Start containers with data collections
-make compose-collect
-
+```
+$ make compose-collect
+```
 ## For local environment:
 ### Start API
-make api
+```
+$ make api
+```
 ### Start UI
-make ui
+```
+$ make ui
+```
 ### Start worker
-make worker
+```
+$ make worker
+```
 ### Start collecting data:
-make collect
+```
+$ make collect
+```
