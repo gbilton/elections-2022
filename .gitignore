@@ -1,7 +1,8 @@
 /.mypy_cache
 /.vscode
 /data
-
+__pycache__
+todo.txt
 
 
 
@@ -33,4 +34,3 @@ yarn-error.log*
 
 backend/.python-version
 backend/.venv
-backend/__pycache__

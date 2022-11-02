@@ -13,7 +13,6 @@ function PredictionsChart() {
     axios
       .get("http://localhost:8000/predictions")
       .then((response) => {
-        console.log(response);
         setPredictions(parseData(response.data));
       })
       .catch((error) => {
@@ -27,7 +26,6 @@ function PredictionsChart() {
         axios
           .get("http://localhost:8000/predictions")
           .then((response) => {
-            console.log(response);
             setPredictions(parseData(response.data));
           })
           .catch((error) => {

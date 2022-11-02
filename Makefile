@@ -10,3 +10,23 @@ collect:
 down:
 	docker-compose down
 
+
+# backend
+
+api:
+	uvicorn backend.app.asgi:app --reload --app-dir .
+
+worker:
+	rq worker
+
+collect:
+	python ./backend/app/collector.py
+
+
+# frontend
+
+ui:
+	npm --prefix ./frontend start
+
+install:
+	npm --prefix ./frontend install ./frontend

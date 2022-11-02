@@ -9,6 +9,8 @@ function PredictionBoard() {
     rows: rows,
   });
 
+  axios.defaults.headers.post["Access-Control-Allow-Origin"] = "*";
+
   useEffect(() => {
     axios
       .get("http://localhost:8000/predictions/last")

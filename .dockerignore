@@ -1,7 +1,7 @@
 /.mypy_cache
 /.vscode
 /data
-
+todo.txt
 
 # ----- frontend -----
 # dependencies

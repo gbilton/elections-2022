@@ -5,8 +5,7 @@ services:
   react-ui:
     container_name: react-ui
     build:
-      context: .
-      dockerfile: Dockerfile.ui
+      context: ./frontend
     ports:
       - "3000:3000"
     stdin_open: true
@@ -17,7 +16,7 @@ services:
     container_name: api
     build: 
       context: .
-      dockerfile: Dockerfile.api
+      dockerfile: ./backend/Dockerfile
     image: elections-2022_api
     ports:
       - 8000:8000

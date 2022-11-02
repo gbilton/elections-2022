@@ -1,8 +1,10 @@
 from pymongo import MongoClient
-from config import settings
+from backend.app.config import settings
 
 
 def get_database():
+    """Connects to elections database"""
+
     # Get host and port from settings
     host = settings["MONGO_HOST"]
     port = settings["MONGO_PORT"]
@@ -15,11 +17,3 @@ def get_database():
 
     # Create the database
     return client["elections"]
-
-
-if __name__ == "__main__":
-
-    # Get the database
-    elections = get_database()
-    votes = elections["votes"]
-    states = elections["states"]

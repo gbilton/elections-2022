@@ -1,29 +1,12 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from schemas import Prediction
+from fastapi import APIRouter
 
-from services import PredictionService
+from .services import PredictionService
+from .schemas import Prediction
 
-
-app = FastAPI()
-
-origins = ["*"]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+prediction_router = APIRouter()
 
 
-@app.get("/")
-async def check_api_health():
-    return {"Health": "OK!"}
-
-
-@app.get("/predictions", response_model=list[Prediction])
+@prediction_router.get("/predictions", response_model=list[Prediction])
 async def get_predictions():
     """Fetch all predictions
 
@@ -35,7 +18,7 @@ async def get_predictions():
     return predictions
 
 
-@app.get("/predictions/last", response_model=Prediction)
+@prediction_router.get("/predictions/last", response_model=Prediction)
 async def get_last_prediction():
     """Fetch the last prediction
 
