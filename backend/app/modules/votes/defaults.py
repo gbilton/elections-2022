@@ -1,4 +1,4 @@
-brazilian_state = [
+brazilian_states = [
     "AC",
     "AL",
     "AM",
