@@ -6,8 +6,11 @@ elections-2022 collects and analyzes data from the official brazilian elections 
 
 # How It Works
 Voting data is periodically collected from each brazilian state. <br/>
+The data is stored in a MongoDB database. <br/>
 The number of votes from each state is then extrapolated, considering that all the votes have been counted, and the vote proportion per candidate remained the same. <br/>
 The results of each state are then aggregated and a prediction is made. <br/>
+The predictions are stored in the database. <br/>
+The frontend consumes the predictions data via an API, and displays the last prediction, and a graph showing all predictions over time.
 
 
 # Installation
