@@ -4,7 +4,7 @@ prune:
 compose:
 	docker-compose up -d --build
 
-collect:
+compose-collect:
 	docker-compose --profile collect up -d --build
 
 down:
@@ -14,13 +14,13 @@ down:
 # backend
 
 api:
-	uvicorn backend.app.asgi:app --reload --app-dir .
+	uvicorn app.asgi:app --reload --app-dir ./backend
 
 worker:
 	rq worker
 
 collect:
-	python ./backend/app/collector.py
+	python backend/app/collector.py
 
 
 # frontend

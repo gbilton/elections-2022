@@ -1,6 +1,6 @@
 from rq import Queue  # type: ignore
 from redis import Redis
-from backend.app.config import settings
+from app.config import settings
 
 
 host = settings["REDIS_HOST"]

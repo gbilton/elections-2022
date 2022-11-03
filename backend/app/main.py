@@ -8,7 +8,7 @@ def create_app() -> FastAPI:
         FastAPI: Returns the application instance.
     """
 
-    from backend.app import routes
+    from app import routes
     from .extensions import middleware
 
     app: FastAPI = FastAPI()

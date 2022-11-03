@@ -2,8 +2,8 @@ from typing import Any, Dict, Optional
 import pymongo
 import pandas as pd
 
-from backend.app.db import get_database
-from backend.app.modules.votes.schemas import StateVotingInfo, Candidate
+from app.db import get_database
+from app.modules.votes.schemas import StateVotingInfo, Candidate
 
 
 class PredictionService:

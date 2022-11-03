@@ -15,8 +15,7 @@ services:
   api:
     container_name: api
     build: 
-      context: .
-      dockerfile: ./backend/Dockerfile
+      context: ./backend
     image: elections-2022_api
     ports:
       - 8000:8000
@@ -60,7 +59,7 @@ services:
   collector:
     container_name: collector
     image: elections-2022_api:latest
-    command: python collect.py
+    command: python backend/app/collector.py
     depends_on:
       - worker
       - mongo

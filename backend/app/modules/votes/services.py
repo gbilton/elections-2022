@@ -3,9 +3,9 @@ from datetime import datetime
 import httpx
 from typing import Any, Coroutine, Dict, Optional
 
-from backend.app.db import get_database
-from backend.app.modules.predictions.services import PredictionService
-from backend.app.handler import worker
+from app.db import get_database
+from app.modules.predictions.services import PredictionService
+from app.handler import worker
 
 from .defaults import brazilian_states
 
